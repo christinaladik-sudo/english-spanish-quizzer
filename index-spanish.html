@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Language Quizzer</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f5f7fb;
+  color: #222;
+}
+
+header {
+  background: white;
+  padding: 18px 20px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0 0 12px;
+  font-size: 28px;
+}
+
+.language-buttons button {
+  margin: 3px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.container {
+  max-width: 850px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+button {
+  border: none;
+  border-radius: 10px;
+  padding: 11px 16px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+.primary {
+  background: #4f46e5;
+  color: white;
+}
+
+.green {
+  background: #22c55e;
+  color: white;
+}
+
+.red {
+  background: #ef4444;
+  color: white;
+}
+
+.gray {
+  background: #e5e7eb;
+  color: #222;
+}
+
+.card {
+  background: white;
+  border-radius: 18px;
+  padding: 25px;
+  margin-bottom: 20px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+}
+
+input {
+  width: 100%;
+  padding: 13px;
+  margin: 7px 0;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+.set {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  margin: 10px 0;
+  background: #f8fafc;
+  border-radius: 12px;
+}
+
+.set-title {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.small {
+  color: #777;
+  font-size: 14px;
+}
+
+.word-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.word {
+  font-weight: bold;
+}
+
+.translation {
+  color: #666;
+}
+
+.actions button {
+  margin-left: 5px;
+}
+
+.center {
+  text-align: center;
+}
+
+.big-word {
+  font-size: 42px;
+  font-weight: bold;
+  margin: 35px 0;
+}
+
+.big-translation {
+  font-size: 28px;
+  color: #555;
+  margin: 20px;
+}
+
+.hidden {
+  display: none;
+}
+
+.search {
+  margin-bottom: 15px;
+}
+
+.quiz-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.back {
+  margin-bottom: 15px;
+}
+
+.empty {
+  text-align: center;
+  color: #777;
+  padding: 30px;
+}
+
+.stats {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.stat {
+  flex: 1;
+  min-width: 120px;
+  padding: 15px;
+  background: #f8fafc;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.progress {
+  background: #e5e7eb;
+  border-radius: 20px;
+  height: 12px;
+  overflow: hidden;
+  margin: 10px 0 20px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: #4f46e5;
+}
+
+.top-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+  <h1>🌎 Language Quizzer</h1>
+
+  <div class="language-buttons">
+
+    <button
+      class="gray"
+      onclick="setLanguage('en')">
+      🇬🇧 English
+    </button>
+
+    <button
+      class="gray"
+      onclick="setLanguage('es')">
+      🇪🇸 Español
+    </button>
+
+    <button
+      class="gray"
+      onclick="setLanguage('ru')">
+      🇷🇺 Русский
+    </button>
+
+  </div>
+
+</header>
+
+
+<div class="container">
+
+  <!-- HOME -->
+
+  <div id="home">
+
+    <div class="card">
+
+      <h2 id="setsTitle"></h2>
+
+      <button
+        class="primary"
+        onclick="showCreateSet()"
+        id="createSetButton">
+      </button>
+
+      <div id="setsList"></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- CREATE SET -->
+
+  <div id="createSet" class="hidden">
+
+    <button
+      class="gray back"
+      onclick="goHome()"
+      id="backHomeButton">
+    </button>
+
+    <div class="card">
+
+      <h2 id="createTitle"></h2>
+
+      <input
+        id="setName"
+        placeholder=""
+      >
+
+      <button
+        class="primary"
+        onclick="createSet()"
+        id="createButton">
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- SET -->
+
+  <div id="setPage" class="hidden">
+
+    <button
+      class="gray back"
+      onclick="goHome()"
+      id="backSetsButton">
+    </button>
+
+    <div class="card">
+
+      <h2 id="currentSetName"></h2>
+
+      <div id="statistics"></div>
+
+      <div class="top-buttons">
+
+        <button
+          class="primary"
+          onclick="showAddWord()"
+          id="addWordButton">
+        </button>
+
+        <button
+          class="green"
+          onclick="startQuiz()"
+          id="practiceButton">
+        </button>
+
+        <button
+          class="gray"
+          onclick="shuffleWords()"
+          id="shuffleButton">
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <input
+        class="search"
+        id="search"
+        placeholder=""
+        oninput="renderWords()"
+      >
+
+      <div id="wordsList"></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ADD WORD -->
+
+  <div id="addWordPage" class="hidden">
+
+    <button
+      class="gray back"
+      onclick="openSet(currentSetId)"
+      id="backSetButton">
+    </button>
+
+    <div class="card">
+
+      <h2 id="addTitle"></h2>
+
+      <input
+        id="wordInput"
+        placeholder=""
+      >
+
+      <input
+        id="translationInput"
+        placeholder=""
+      >
+
+      <button
+        class="primary"
+        onclick="addWord()"
+        id="addButton">
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- QUIZ -->
+
+  <div id="quizPage" class="hidden">
+
+    <button
+      class="gray back"
+      onclick="openSet(currentSetId)"
+      id="exitButton">
+    </button>
+
+    <div class="card center">
+
+      <div id="quizCounter"></div>
+
+      <div
+        class="big-word"
+        id="quizWord">
+      </div>
+
+      <button
+        class="gray"
+        id="showAnswerButton"
+        onclick="showAnswer()">
+      </button>
+
+      <div
+        class="big-translation"
+        id="quizTranslation">
+      </div>
+
+      <div
+        class="quiz-buttons hidden"
+        id="answerButtons">
+
+        <button
+          class="red"
+          onclick="answer(false)"
+          id="dontKnowButton">
+        </button>
+
+        <button
+          class="green"
+          onclick="answer(true)"
+          id="knowButton">
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   ПЕРЕВОДЫ
+========================= */
+
+const translations = {
+
+  ru: {
+
+    title: "🌎 Language Quizzer",
+
+    sets: "🗂️ Мои наборы",
+
+    createSet: "➕ Создать набор",
+
+    back: "← Назад",
+
+    backSets: "← Мои наборы",
+
+    createTitle: "Создать набор",
+
+    setPlaceholder:
+      "Название набора, например Español A2",
+
+    create: "Создать",
+
+    addWord: "➕ Добавить слово",
+
+    practice: "🧠 Повторять",
+
+    shuffle: "🔀 Перемешать",
+
+    search: "🔍 Поиск слова...",
+
+    addTitle: "➕ Добавить слово",
+
+    englishWord: "Слово",
+
+    translation: "Перевод",
+
+    add: "Добавить",
+
+    exit: "← Выйти",
+
+    show: "👀 Показать перевод",
+
+    know: "✅ Знаю",
+
+    dontKnow: "❌ Не знаю",
+
+    total: "Всего слов",
+
+    known: "Знаю",
+
+    unknown: "Не знаю",
+
+    progress: "Прогресс",
+
+    open: "Открыть",
+
+    words: "слов",
+
+    edit: "✏️",
+
+    delete: "🗑️",
+
+    noSets: "У тебя пока нет наборов.",
+
+    noWords: "Слов нет.",
+
+    emptySet:
+      "Сначала добавь хотя бы одно слово.",
+
+    finish:
+      "🎉 Повторение закончено!",
+
+    shuffled:
+      "Слова перемешаны 🔀",
+
+    enterSet:
+      "Введите название набора",
+
+    enterWord:
+      "Введите слово и перевод",
+
+    deleteSet:
+      "Удалить этот набор вместе со всеми словами?",
+
+    deleteWord:
+      "Удалить это слово?"
+
+  },
+
+
+  en: {
+
+    title: "🌎 Language Quizzer",
+
+    sets: "🗂️ My sets",
+
+    createSet: "➕ Create set",
+
+    back: "← Back",
+
+    backSets: "← My sets",
+
+    createTitle: "Create set",
+
+    setPlaceholder:
+      "Set name, for example Español A2",
+
+    create: "Create",
+
+    addWord: "➕ Add word",
+
+    practice: "🧠 Practice",
+
+    shuffle: "🔀 Shuffle",
+
+    search: "🔍 Search word...",
+
+    addTitle: "➕ Add word",
+
+    englishWord: "Word",
+
+    translation: "Translation",
+
+    add: "Add",
+
+    exit: "← Exit",
+
+    show: "👀 Show translation",
+
+    know: "✅ I know it",
+
+    dontKnow: "❌ Don't know",
+
+    total: "Total words",
+
+    known: "Known",
+
+    unknown: "Unknown",
+
+    progress: "Progress",
+
+    open: "Open",
+
+    words: "words",
+
+    edit: "✏️",
+
+    delete: "🗑️",
+
+    noSets: "You don't have any sets yet.",
+
+    noWords: "No words.",
+
+    emptySet:
+      "Add at least one word first.",
+
+    finish:
+      "🎉 Practice finished!",
+
+    shuffled:
+      "Words shuffled 🔀",
+
+    enterSet:
+      "Enter a set name",
+
+    enterWord:
+      "Enter a word and translation",
+
+    deleteSet:
+      "Delete this set and all its words?",
+
+    deleteWord:
+      "Delete this word?"
+
+  },
+
+
+  es: {
+
+    title: "🌎 Language Quizzer",
+
+    sets: "🗂️ Mis conjuntos",
+
+    createSet: "➕ Crear conjunto",
+
+    back: "← Atrás",
+
+    backSets: "← Mis conjuntos",
+
+    createTitle: "Crear conjunto",
+
+    setPlaceholder:
+      "Nombre del conjunto, por ejemplo Español A2",
+
+    create: "Crear",
+
+    addWord: "➕ Añadir palabra",
+
+    practice: "🧠 Practicar",
+
+    shuffle: "🔀 Mezclar",
+
+    search: "🔍 Buscar palabra...",
+
+    addTitle: "➕ Añadir palabra",
+
+    englishWord: "Palabra",
+
+    translation: "Traducción",
+
+    add: "Añadir",
+
+    exit: "← Salir",
+
+    show: "👀 Mostrar traducción",
+
+    know: "✅ Lo sé",
+
+    dontKnow: "❌ No lo sé",
+
+    total: "Palabras totales",
+
+    known: "Sé",
+
+    unknown: "No sé",
+
+    progress: "Progreso",
+
+    open: "Abrir",
+
+    words: "palabras",
+
+    edit: "✏️",
+
+    delete: "🗑️",
+
+    noSets: "Todavía no tienes conjuntos.",
+
+    noWords: "No hay palabras.",
+
+    emptySet:
+      "Añade al menos una palabra primero.",
+
+    finish:
+      "🎉 ¡Práctica terminada!",
+
+    shuffled:
+      "Palabras mezcladas 🔀",
+
+    enterSet:
+      "Introduce el nombre del conjunto",
+
+    enterWord:
+      "Introduce una palabra y su traducción",
+
+    deleteSet:
+      "¿Eliminar este conjunto y todas sus palabras?",
+
+    deleteWord:
+      "¿Eliminar esta palabra?"
+
+  }
+
+};
+
+
+/* =========================
+   ДАННЫЕ
+========================= */
+
+let data =
+  JSON.parse(
+    localStorage.getItem("englishQuizzer")
+  ) || {
+
+    sets: []
+
+  };
+
+
+let currentSetId = null;
+
+let quizWords = [];
+
+let quizIndex = 0;
+
+
+/* =========================
+   ЯЗЫК
+========================= */
+
+let language =
+  localStorage.getItem("quizLanguage")
+  || "ru";
+
+
+function setLanguage(lang) {
+
+  language = lang;
+
+  localStorage.setItem(
+    "quizLanguage",
+    lang
+  );
+
+  updateInterface();
+
+}
+
+
+function t(key) {
+
+  return translations[language][key];
+
+}
+
+
+/* =========================
+   ИНТЕРФЕЙС
+========================= */
+
+function updateInterface() {
+
+  document.title =
+    "Language Quizzer";
+
+
+  document.querySelector("header h1")
+    .textContent =
+      t("title");
+
+
+  document.getElementById("setsTitle")
+    .textContent =
+      t("sets");
+
+
+  document.getElementById("createSetButton")
+    .textContent =
+      t("createSet");
+
+
+  document.getElementById("backHomeButton")
+    .textContent =
+      t("back");
+
+
+  document.getElementById("createTitle")
+    .textContent =
+      t("createTitle");
+
+
+  document.getElementById("setName")
+    .placeholder =
+      t("setPlaceholder");
+
+
+  document.getElementById("createButton")
+    .textContent =
+      t("create");
+
+
+  document.getElementById("backSetsButton")
+    .textContent =
+      t("backSets");
+
+
+  document.getElementById("addWordButton")
+    .textContent =
+      t("addWord");
+
+
+  document.getElementById("practiceButton")
+    .textContent =
+      t("practice");
+
+
+  document.getElementById("shuffleButton")
+    .textContent =
+      t("shuffle");
+
+
+  document.getElementById("search")
+    .placeholder =
+      t("search");
+
+
+  document.getElementById("backSetButton")
+    .textContent =
+      t("back");
+
+
+  document.getElementById("addTitle")
+    .textContent =
+      t("addTitle");
+
+
+  document.getElementById("wordInput")
+    .placeholder =
+      t("englishWord");
+
+
+  document.getElementById("translationInput")
+    .placeholder =
+      t("translation");
+
+
+  document.getElementById("addButton")
+    .textContent =
+      t("add");
+
+
+  document.getElementById("exitButton")
+    .textContent =
+      t("exit");
+
+
+  document.getElementById("showAnswerButton")
+    .textContent =
+      t("show");
+
+
+  document.getElementById("knowButton")
+    .textContent =
+      t("know");
+
+
+  document.getElementById("dontKnowButton")
+    .textContent =
+      t("dontKnow");
+
+
+  renderSets();
+
+  if (currentSetId) {
+
+    renderStatistics();
+
+    renderWords();
+
+  }
+
+}
+
+
+/* =========================
+   СОХРАНЕНИЕ
+========================= */
+
+function save() {
+
+  localStorage.setItem(
+    "englishQuizzer",
+    JSON.stringify(data)
+  );
+
+}
+
+
+/* =========================
+   ЭКРАНЫ
+========================= */
+
+function hideAll() {
+
+  document
+    .querySelectorAll(".container > div")
+    .forEach(
+      el =>
+        el.classList.add("hidden")
+    );
+
+}
+
+
+function goHome() {
+
+  hideAll();
+
+  document
+    .getElementById("home")
+    .classList.remove("hidden");
+
+  renderSets();
+
+}
+
+
+/* =========================
+   НАБОРЫ
+========================= */
+
+function showCreateSet() {
+
+  hideAll();
+
+  document
+    .getElementById("createSet")
+    .classList.remove("hidden");
+
+}
+
+
+function createSet() {
+
+  const name =
+    document
+      .getElementById("setName")
+      .value
+      .trim();
+
+
+  if (!name) {
+
+    alert(t("enterSet"));
+
+    return;
+
+  }
+
+
+  const newSet = {
+
+    id: Date.now(),
+
+    name: name,
+
+    words: []
+
+  };
+
+
+  data.sets.push(newSet);
+
+  save();
+
+
+  document
+    .getElementById("setName")
+    .value = "";
+
+
+  openSet(newSet.id);
+
+}
+
+
+function renderSets() {
+
+  const container =
+    document.getElementById("setsList");
+
+
+  if (!container) return;
+
+
+  container.innerHTML = "";
+
+
+  if (data.sets.length === 0) {
+
+    container.innerHTML =
+      `<div class="empty">
+        ${t("noSets")}
+      </div>`;
+
+    return;
+
+  }
+
+
+  data.sets.forEach(set => {
+
+    const div =
+      document.createElement("div");
+
+
+    div.className = "set";
+
+
+    div.innerHTML = `
+
+      <div>
+
+        <div class="set-title">
+          ${escapeHtml(set.name)}
+        </div>
+
+        <div class="small">
+          ${set.words.length}
+          ${t("words")}
+        </div>
+
+      </div>
+
+      <div>
+
+        <button
+          class="primary"
+          onclick="openSet(${set.id})">
+
+          ${t("open")}
+
+        </button>
+
+        <button
+          class="red"
+          onclick="deleteSet(${set.id})">
+
+          🗑️
+
+        </button>
+
+      </div>
+
+    `;
+
+
+    container.appendChild(div);
+
+  });
+
+}
+
+
+function deleteSet(id) {
+
+  if (
+    !confirm(t("deleteSet"))
+  ) {
+    return;
+  }
+
+
+  data.sets =
+    data.sets.filter(
+      set =>
+        set.id !== id
+    );
+
+
+  save();
+
+  renderSets();
+
+}
+
+
+/* =========================
+   НАБОР
+========================= */
+
+function openSet(id) {
+
+  currentSetId = id;
+
+
+  const set =
+    getCurrentSet();
+
+
+  if (!set) return;
+
+
+  hideAll();
+
+
+  document
+    .getElementById("setPage")
+    .classList.remove("hidden");
+
+
+  document
+    .getElementById("currentSetName")
+    .textContent =
+      "📚 " + set.name;
+
+
+  document
+    .getElementById("search")
+    .value = "";
+
+
+  renderStatistics();
+
+  renderWords();
+
+}
+
+
+/* =========================
+   СЛОВА
+========================= */
+
+function showAddWord() {
+
+  hideAll();
+
+  document
+    .getElementById("addWordPage")
+    .classList.remove("hidden");
+
+}
+
+
+function addWord() {
+
+  const word =
+    document
+      .getElementById("wordInput")
+      .value
+      .trim();
+
+
+  const translation =
+    document
+      .getElementById("translationInput")
+      .value
+      .trim();
+
+
+  if (!word || !translation) {
+
+    alert(t("enterWord"));
+
+    return;
+
+  }
+
+
+  const set =
+    getCurrentSet();
+
+
+  set.words.push({
+
+    id: Date.now(),
+
+    word: word,
+
+    translation: translation,
+
+    known: 0,
+
+    unknown: 0
+
+  });
+
+
+  save();
+
+
+  document
+    .getElementById("wordInput")
+    .value = "";
+
+
+  document
+    .getElementById("translationInput")
+    .value = "";
+
+
+  openSet(currentSetId);
+
+}
+
+
+function renderWords() {
+
+  const set =
+    getCurrentSet();
+
+
+  if (!set) return;
+
+
+  const search =
+    document
+      .getElementById("search")
+      .value
+      .toLowerCase();
+
+
+  const container =
+    document.getElementById("wordsList");
+
+
+  container.innerHTML = "";
+
+
+  const filtered =
+    set.words.filter(word =>
+
+      word.word
+        .toLowerCase()
+        .includes(search)
+
+      ||
+
+      word.translation
+        .toLowerCase()
+        .includes(search)
+
+    );
+
+
+  if (filtered.length === 0) {
+
+    container.innerHTML =
+      `<div class="empty">
+        ${t("noWords")}
+      </div>`;
+
+    return;
+
+  }
+
+
+  filtered.forEach(word => {
+
+    const row =
+      document.createElement("div");
+
+
+    row.className =
+      "word-row";
+
+
+    row.innerHTML = `
+
+      <div>
+
+        <div class="word">
+          ${escapeHtml(word.word)}
+        </div>
+
+        <div class="translation">
+          ${escapeHtml(word.translation)}
+        </div>
+
+      </div>
+
+      <div class="actions">
+
+        <button
+          class="gray"
+          onclick="editWord(${word.id})">
+
+          ✏️
+
+        </button>
+
+        <button
+          class="red"
+          onclick="deleteWord(${word.id})">
+
+          🗑️
+
+        </button>
+
+      </div>
+
+    `;
+
+
+    container.appendChild(row);
+
+  });
+
+}
+
+
+/* =========================
+   РЕДАКТИРОВАНИЕ
+========================= */
+
+function editWord(id) {
+
+  const set =
+    getCurrentSet();
+
+
+  const word =
+    set.words.find(
+      w => w.id === id
+    );
+
+
+  if (!word) return;
+
+
+  const newWord =
+    prompt(
+      t("englishWord"),
+      word.word
+    );
+
+
+  if (newWord === null)
+    return;
+
+
+  const newTranslation =
+    prompt(
+      t("translation"),
+      word.translation
+    );
+
+
+  if (newTranslation === null)
+    return;
+
+
+  word.word =
+    newWord.trim();
+
+
+  word.translation =
+    newTranslation.trim();
+
+
+  save();
+
+  renderWords();
+
+}
+
+
+function deleteWord(id) {
+
+  if (
+    !confirm(t("deleteWord"))
+  ) {
+    return;
+  }
+
+
+  const set =
+    getCurrentSet();
+
+
+  set.words =
+    set.words.filter(
+      word =>
+        word.id !== id
+    );
+
+
+  save();
+
+  renderStatistics();
+
+  renderWords();
+
+}
+
+
+/* =========================
+   СТАТИСТИКА
+========================= */
+
+function renderStatistics() {
+
+  const set =
+    getCurrentSet();
+
+
+  if (!set) return;
+
+
+  const total =
+    set.words.length;
+
+
+  const known =
+    set.words.reduce(
+      (sum, word) =>
+        sum + word.known,
+      0
+    );
+
+
+  const unknown =
+    set.words.reduce(
+      (sum, word) =>
+        sum + word.unknown,
+      0
+    );
+
+
+  const attempts =
+    known + unknown;
+
+
+  const percent =
+    attempts === 0
+      ? 0
+      : Math.round(
+          known / attempts * 100
+        );
+
+
+  document
+    .getElementById("statistics")
+    .innerHTML = `
+
+      <div class="stats">
+
+        <div class="stat">
+
+          <div class="stat-number">
+            ${total}
+          </div>
+
+          <div>
+            ${t("total")}
+          </div>
+
+        </div>
+
+
+        <div class="stat">
+
+          <div class="stat-number">
+            ${known}
+          </div>
+
+          <div>
+            ✅ ${t("known")}
+          </div>
+
+        </div>
+
+
+        <div class="stat">
+
+          <div class="stat-number">
+            ${unknown}
+          </div>
+
+          <div>
+            ❌ ${t("unknown")}
+          </div>
+
+        </div>
+
+
+        <div class="stat">
+
+          <div class="stat-number">
+            ${percent}%
+          </div>
+
+          <div>
+            📊 ${t("progress")}
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="progress">
+
+        <div
+          class="progress-bar"
+          style="width:${percent}%">
+        </div>
+
+      </div>
+
+    `;
+
+}
+
+
+/* =========================
+   ПЕРЕМЕШИВАНИЕ
+========================= */
+
+function shuffleWords() {
+
+  const set =
+    getCurrentSet();
+
+
+  set.words.sort(
+    () =>
+      Math.random() - 0.5
+  );
+
+
+  save();
+
+  renderWords();
+
+
+  alert(t("shuffled"));
+
+}
+
+
+/* =========================
+   QUIZ
+========================= */
+
+function startQuiz() {
+
+  const set =
+    getCurrentSet();
+
+
+  if (set.words.length === 0) {
+
+    alert(t("emptySet"));
+
+    return;
+
+  }
+
+
+  quizWords =
+    [...set.words];
+
+
+  quizWords.sort(
+    () =>
+      Math.random() - 0.5
+  );
+
+
+  quizIndex = 0;
+
+
+  hideAll();
+
+
+  document
+    .getElementById("quizPage")
+    .classList.remove("hidden");
+
+
+  showQuizWord();
+
+}
+
+
+function showQuizWord() {
+
+  const word =
+    quizWords[quizIndex];
+
+
+  document
+    .getElementById("quizWord")
+    .textContent =
+      word.word;
+
+
+  document
+    .getElementById("quizTranslation")
+    .textContent = "";
+
+
+  document
+    .getElementById("answerButtons")
+    .classList.add("hidden");
+
+
+  document
+    .getElementById("showAnswerButton")
+    .classList.remove("hidden");
+
+
+  document
+    .getElementById("quizCounter")
+    .textContent =
+      `${quizIndex + 1} / ${quizWords.length}`;
+
+}
+
+
+function showAnswer() {
+
+  const word =
+    quizWords[quizIndex];
+
+
+  document
+    .getElementById("quizTranslation")
+    .textContent =
+      word.translation;
+
+
+  document
+    .getElementById("answerButtons")
+    .classList.remove("hidden");
+
+
+  document
+    .getElementById("showAnswerButton")
+    .classList.add("hidden");
+
+}
+
+
+function answer(known) {
+
+  const set =
+    getCurrentSet();
+
+
+  const word =
+    set.words.find(
+      w =>
+        w.id ===
+        quizWords[quizIndex].id
+    );
+
+
+  if (known) {
+
+    word.known++;
+
+  } else {
+
+    word.unknown++;
+
+  }
+
+
+  save();
+
+
+  quizIndex++;
+
+
+  if (
+    quizIndex >=
+    quizWords.length
+  ) {
+
+    alert(t("finish"));
+
+    openSet(currentSetId);
+
+    return;
+
+  }
+
+
+  showQuizWord();
+
+}
+
+
+/* =========================
+   ПОМОЩНИКИ
+========================= */
+
+function getCurrentSet() {
+
+  return data.sets.find(
+    set =>
+      set.id === currentSetId
+  );
+
+}
+
+
+function escapeHtml(text) {
+
+  return text
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
+}
+
+
+/* =========================
+   ЗАПУСК
+========================= */
+
+updateInterface();
+
+</script>
+
+</body>
+</html>
